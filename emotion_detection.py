@@ -2,15 +2,28 @@ import requests
 import json
 
 def emotion_detector(text_to_analyse):
-    # URL of the sentiment analysis service
     url = 'https://sn-watson-emotion.labs.skills.network/v1/watson.runtime.nlp.v1/NlpService/EmotionPredict'
-
-    # Constructing the request payload in the expected format
     myobj = { "raw_document": { "text": text_to_analyse } }
-
-    # Custom header specifying the model ID for the sentiment analysis service
     header = {"grpc-metadata-mm-model-id": "emotion_aggregated-workflow_lang_en_stock"}
-
-    # Sending a POST request to the sentiment analysis API
-    response = requests.post(url, json = myobj, headers=header)  # Send a POST request to the API with the text and headers
-    return response.text  # Return the response text from the API
+    response = requests.post(url, json=myobj, headers=header)
+    formatted_response = json.loads(response.text)
+    if all(value is None for value in text_to_analyse.values()):
+        return detected_text
+    emotions = detected_text['emotionPredictions'][0]['emotion']
+    dominant_emotion = max(emotions.items(), key=lambda x: x[1])[0]
+    anger = emotions['anger']
+    disgust = emotions['disgust']
+    fear = emotions['fear']
+    joy = emotions['joy']
+    sadness = emotions['sadness']
+    max_emotion = max(emotions, key=emotions.get)
+    #max_emotion_score = emotions[max_emotion]
+    formatted_dict_emotions = {
+                            'anger': anger,
+                            'disgust': disgust,
+                            'fear': fear,
+                            'joy': joy,
+                            'sadness': sadness,
+                            'dominant_emotion': max_emotion
+                            }
+    return formatted_dict_emotions

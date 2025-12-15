@@ -15,6 +15,10 @@ def em_detect():
     joy = response['joy']
     sadness = response['sadness']
     dominant = response['dominant_emotion']
+    
+    #If dominant emotion is None, show the invalid text message
+    if dominant is None:
+        return "Invalid text! Please try again!"
 
     # Return the formatted string
     return (
